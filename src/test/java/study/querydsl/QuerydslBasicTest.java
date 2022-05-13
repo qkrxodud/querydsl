@@ -412,4 +412,54 @@ public class QuerydslBasicTest {
             System.out.println("username = " + tuple.get(member.username));
         }
     }
+
+    @Test
+    public void caseQuery() throws Exception {
+        List<String> result = queryFactory
+                .select(member.age
+                        .when(10).then("열살")
+                        .when(20).then("스무살")
+                        .otherwise("기타")
+                ).from(member)
+                .fetch();
+    }
+
+    @Test
+    public void level1ComplexCaseQuery() throws Exception {
+        List<String> result = queryFactory
+                .select(new CaseBuilder()
+                        .when(member.age.between(0,20)).then("0~20살")
+                        .when(member.age.between(21,30)).then("21~30살")
+                        .otherwise("기타"))
+                .from(member)
+                .fetch();
+
+    }
+
+    @Test
+    public void level2ComplexCaseQuery() throws Exception {
+        NumberExpression<Integer> rankPath = new CaseBuilder()
+                .when(member.age.between(0, 20)).then(2)
+                .when(member.age.between(21, 30)).then(1)
+                .otherwise(3);
+
+        List<Tuple> fetch = queryFactory
+                .select(member.age,
+                        member.username,
+                        rankPath)
+                .from(member)
+                .orderBy(rankPath.desc())
+                .fetch();
+
+        for (Tuple tuple : fetch) {
+            String username = tuple.get(member.username);
+            Integer age = tuple.get(member.age);
+            Integer rank = tuple.get(rankPath);
+            System.out.println("username = " + username + " age = " + age + " rank = "
+                    + rank);
+        }
+
+    }
+
+
 }
