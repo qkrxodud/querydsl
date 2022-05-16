@@ -605,4 +605,34 @@ public class QuerydslBasicTest {
             System.out.println(" memberDto  = " + memberDto.getAge());
         }
     }
+
+    @Test
+    public void 동적쿼리_booleanBuilder() throws Exception {
+        String usernameParam = "member1";
+        Integer agePara = 10;
+
+        List<Member> result = searchMember1(usernameParam, agePara);
+        for (Member member1 : result) {
+            System.out.println("member1" + member1.getUsername());
+            System.out.println("member1" + member1.getAge());
+        }
+    }
+
+    private List<Member> searchMember1(String usernameParam, Integer agePara) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (usernameParam != null) {
+            builder.and(member.username.eq(usernameParam));
+        }
+
+        if (agePara != null) {
+            builder.and(member.age.eq(agePara));
+        }
+        return queryFactory
+                .selectFrom(member)
+                .where(builder)
+                .fetch();
+    }
+
+
 }
