@@ -1,7 +1,9 @@
 package study.querydsl.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.Data;
 
+@Data
 public class MemberTeamDto {
 
     private Long memberId;
